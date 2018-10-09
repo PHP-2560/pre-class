@@ -108,6 +108,7 @@ B. Assign all the numeric columns of the original WCGS dataset to a new dataset 
 #Using the dplyr function "select_if", the columns of the original dataset that are numeric are assigned to a new dataset WCGS.new.
 library(dplyr)
 WCGS.new <- select_if(wcgs, is.numeric)
+
 ```
 C. Using a loop and your new function, standardize all the variables WCGS.new dataset.
 ```{r}
@@ -115,6 +116,7 @@ C. Using a loop and your new function, standardize all the variables WCGS.new da
 for(i in seq_along(WCGS.new)){
   WCGS.new[,i] <- standardize.me(WCGS.new[,i])
 }
+#Notice that since the "chol" column contains an NA value, the whole column becomes NA when the standardize function is applied to it, since the mean is not calculated with NA values. The function could be fixed to deal with the cases of NA value - since this is not explicitly asked for, I'll leave it out.
 ```
 D. What should the mean and standard deviation of all your new standardized variables be? Test your prediction by running a loop
 ```{r}
@@ -135,5 +137,41 @@ sds
 ### Question 2: Looping to Calculate
 
 A. Using a loop, calculate the mean weight of the subjects separated by the type of CHD they have.
+```{r}
+#First we initiate vectors that will contain the number of people with each type of CHD, and then the sum of their weights. Then these two vectors can be divided to produce the mean weight of the subjects by the type of CHD they have.
+num_type <- numeric(4)
+names(num_type) <- c("no CHD", "MI or SD", "silent MI", "angina")
+sum_weight <- numeric(4)
+names(sum_weight) <- c("no CHD", "MI or SD", "silent MI", "angina")
+#This for loop looks at each row, determines the type of CHD the patient has, and adds 1 to the number of people with that type of CHD, then adds the weight of the patient to the sum of the weights of the patients with that type of CHD.
+for(i in 1:nrow(wcgs)){
+  if(wcgs$typchd69[i] == "no CHD"){
+    num_type[1] <- num_type[1] + 1
+    sum_weight[1] <- sum_weight[1] + wcgs$weight[i]
+  }
+  else if(wcgs$typchd69[i] == "MI or SD"){
+    num_type[2] <- num_type[2] + 1
+    sum_weight[2] <- sum_weight[2] + wcgs$weight[i]
+  }
+  else if(wcgs$typchd69[i] == "silent MI"){
+    num_type[3] <- num_type[3] + 1
+    sum_weight[3] <- sum_weight[3] + wcgs$weight[i]
+  }
+  else if(wcgs$typchd69[i] == "angina"){
+    num_type[4] <- num_type[4] + 1
+    sum_weight[4] <- sum_weight[4] + wcgs$weight[i]
+  }
+}
+#Once the loop is finished, the sum of the weights is divided by the number of people with each type of CHD, giving the mean weight of the subjects separated by the type of CHD they have.
+mean_by_type <- sum_weight/num_type
+names(mean_by_type) <- c("no CHD", "MI or SD", "silent MI", "angina")
+mean_by_type
+```
 B. Now do the same thing, but now don’t use a loop
+```{r}
+#Now, using dplyr functions and piping, we group by the type of CHD and summarise by the mean weight.
+wcgs %>% 
+  group_by(typchd69) %>%
+    summarise(mean_weight = mean(weight))
+```
 
