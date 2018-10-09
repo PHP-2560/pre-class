@@ -95,11 +95,40 @@ bmi     Body Mass Index
 
 ### Question 1: Standardize Function
 
-A. Create a function called standardize.me() that takes a numeric vector as an argument, and returns the standardized version of the vector. 
+A. Create a function called standardize.me() that takes a numeric vector as an argument, and returns the standardized version of the vector.
+```{r}
+#The standardize.me function takes each element of a numeric vector x, subtracts the mean of x from it and then divides by the standard deviation of x. This creates a standardized version of the vector x.
+standardize.me <- function(x){
+  standardized <- (x - mean(x))/sd(x)
+  standardized
+}
+```
 B. Assign all the numeric columns of the original WCGS dataset to a new dataset called WCGS.new.
+```{r}
+#Using the dplyr function "select_if", the columns of the original dataset that are numeric are assigned to a new dataset WCGS.new.
+library(dplyr)
+WCGS.new <- select_if(wcgs, is.numeric)
+```
 C. Using a loop and your new function, standardize all the variables WCGS.new dataset.
+```{r}
+#This loop standardizes each column of the new dataset containing only numeric columns.
+for(i in seq_along(WCGS.new)){
+  WCGS.new[,i] <- standardize.me(WCGS.new[,i])
+}
+```
 D. What should the mean and standard deviation of all your new standardized variables be? Test your prediction by running a loop
-
+```{r}
+#After being standardized, the mean should be 0 and the standard deviation should be 1 for each of the standardized variables. Let's check this:
+means <- numeric(0)
+sds <- numeric(0)
+for(i in seq_along(WCGS.new)){
+  means[i] <- mean(WCGS.new[,i])
+  sds[i] <- sd(WCGS.new[,i])
+}
+means
+sds
+#In fact, excluding the NA values, the mean is extremely close to 0 for each of the standardized variables, and the standard deviations are all exactly 1.
+```
 
 
 
