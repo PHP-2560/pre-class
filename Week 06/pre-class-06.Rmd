@@ -1,0 +1,70 @@
+# pre-class
+
+
+Make sure you commit this often with meaningful messages. 
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1. Read the source code for each of the following three functions, puzzle out what they do, and then brainstorm better names.
+
+```
+f1 <- function(string, prefix) {
+  substr(string, 1, nchar(prefix)) == prefix
+}
+```
+*This function takes the inputs "string" and "prefix", and checks if "prefix" is a prefix of "string", e.g. "ab" is a prefix of "abc", "e" is not a prefix of "abc". A better name for the function might be "check_prefix()"*
+```
+f2 <- function(x) {
+  if (length(x) <= 1) return(NULL)
+  x[-length(x)]
+}
+```
+*This function takes a vector, checks if it has a length longer than 1 (if it does not, it returns NULL). If it does have length longer than 1, it returns the vector with the last element in the vector removed. A good name might be "remove_last()".*
+
+```
+f3 <- function(x, y) {
+  rep(y, length.out = length(x))
+}
+```
+*This function takes two input vectors x and y, it then repeats the vector y, it then repeats the vector y up to the length of x, e.g. if y = 1:5 and x = 1:20, then the function returns 1:5 repeated 4 times, if y = 1:7 and x = 1:20, then the function returns 1:7 repeated twice, then 1:6, since the length of x is 20. A better name might be "repeat_y_with_length_x()".*
+
+2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
+
+*Firstly, the MASS::mvrnorm() function produces samples from a multivariate normal distribution, whereas the rnorm() function only simulates from the normal distribution. If the MASS::mvrnorm() function is given single values rather than a vector of values, it should produce similar results to the rnorm() function.*
+
+*The function rnorm() has no default value for n, whereas mvrnorm() has default value n = 1. On the other hand, rnorm() has default "mean = 0", whereas mvrnorm() has no default value for the mean "mu", similarly rnorm has default "sd = 1", whereas mvrnorm() has no default for the standard deviation "Sigma". In other words, rnorm() defaults to the standard normal distribution, whereas mvrnorm() needs to have the mean and standard deviation specified. Finally, mvrnorm() returns a matrix whereas rnorm() returns a vector of values.*
+
+*It makes sense to keep it such that mvrnorm() returns a matrix so it can also give information for the case when it is giving samples from a multivariate distribution. The best things to do to make these two functions more consistent by giving both functions the same argument names and default values, e.g. n = 1, mean = 0, sd = 1.*
+
+3. Use `lapply()` and an anonymous function to find the coefficient of variation (the standard deviation divided by the mean) for all columns in the mtcars dataset. 
+```{r}
+#First load the mtcars data set.
+mtcars <- mtcars
+#Using lapply with the anonymous function that gives the standard deviation divided by the mean gives the desired value for each column, since data frames are treated as a collection of lists corresponding to each column, so the function is applied to each column of mtcars.
+lapply(mtcars, function(x) sd(x)/mean(x))
+```
+4. Use vapply() to:
+    a. Compute the standard deviation of every column in a numeric data frame.
+```{r}
+#This function uses vapply to calculate the standard deviation of each column, with FUN.VALUE set to numeric to ensure that the function returns a numeric vector.
+column_sd <- function(df){
+  vapply(df, sd, FUN.VALUE = numeric(1))
+}
+```
+    b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+```{r}
+#This function works similarly to the one in part a, but first checks the columns to find which ones are numeric, then only returns the standard deviation of the columns which are numeric.
+num_column_sd <- function(df){
+  num_columns <- numeric(0)
+  for(i in seq_along(df)){
+    if(is.numeric(df[,i]))
+      num_columns <- c(num_columns, i)
+  }
+  vapply(df[,num_columns], sd, numeric(1))
+}
+```
