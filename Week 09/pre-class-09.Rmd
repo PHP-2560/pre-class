@@ -21,12 +21,49 @@ options(scipen = 3, digits = 3)
 ## Exercises
 
 1. Read the HTML content of the following URL with a variable called webpage: https://money.cnn.com/data/us_markets/ At this point, it will also be useful to open this web page in your browser.
+```{r}
+#After installing the 'rvest' package, we can use the read_html function on the the given url to save the content of the URL.
+
+library(rvest)
+url <- "https://money.cnn.com/data/us_markets/"
+webpage <- read_html(url)
+```
 2. Get the session details (status, type, size) of the above mentioned URL.
+```{r}
+#Running the html_session function on the given URL will give the session details.
+html_session(url)
+```
 3. Extract all of the sector names from the “Stock Sectors” table (bottom left of the web page.)
+```{r}
+#Running html_nodes on the webpage and specifying table and then running html_table on the nodes gives data frames containing the data on the webpage. 
+tables <- html_table(html_nodes(webpage, "table"))
+#Three tables are then saved from the page. The second table is the "Stock Sectors" table, so we can then select that one.
+Stock_Sectors <- tables[[2]]
+#The first column of the Stock_Sectors table contains the names.
+Stock_Sectors[,1]
+```
 4. Extract all of the “3 Month % Change” values from the “Stock Sectors” table.
+```{r}
+#The second column of the Stock_Sectors table contains the "3 Month % Change" values.
+Stock_Sectors[,2]
+```
 5. Extract the table “What’s Moving” (top middle of the web page) into a data-frame.
+```{r}
+#We saved the "What's Moving" table in the "table" list of data frames above. It is the first table in the list.
+Whats_Moving <- tables[[1]]
+Whats_Moving
+```
 6. Re-construct all of the links from the first column of the “What’s Moving” table.
 Hint: the base URL is “https://money.cnn.com”
+```{r}
+#The URLs are in the form "https://money.cnn.com/quote/quote.html?symb=" followed by the 4 letter stock identifying abbreviation. These names are the first 4 letters in the first column of the Whats_Moving table. The urls are collected by pasting together the base URL with the 4 letter symbol by using substr to extract the abbreviations.
+urls <- c()
+names <- Whats_Moving[,1]
+for(i in seq_along(names)){
+  urls <- c(urls, paste(paste("https://money.cnn.com/quote/quote.html?symb=", substr(names[i], 1, 4), sep = "")))
+}
+urls
+```
 7. Extract the titles under the “Latest News” section (bottom middle of the web page.)
 8. To understand the structure of the data in a web page, it is often useful to know what the underlying attributes are of the text you see.
 Extract the attributes (and their values) of the HTML element that holds the timestamp underneath the “What’s Moving” table.
