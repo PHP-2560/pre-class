@@ -57,16 +57,30 @@ Whats_Moving
 Hint: the base URL is “https://money.cnn.com”
 ```{r}
 #I used the selectorgadget to pick out the appropriate CSS selector - in this case it is "tr .wsod_symbol" - and the "href" attribute combined with the base URL recreates the links.
-url_suffixes <- html_attr(html_nodes(webpage, "tr .wsod_symbol"), "href")
+url_suffixes <- html_attr(html_nodes(webpage, cs = "tr .wsod_symbol"), "href")
 paste("https://money.cnn.com", url_suffixes, sep = "")
 ```
 7. Extract the titles under the “Latest News” section (bottom middle of the web page.)
 ```{r}
 #This bit of code extracts the nodes from the "Latest News" section, and the html_text function extracts the titles.
-html_text(html_nodes(webpage, "#section_latestnews a"))
+html_text(html_nodes(webpage, css = ".HeadlineList a"))
 ```
 8. To understand the structure of the data in a web page, it is often useful to know what the underlying attributes are of the text you see.
 Extract the attributes (and their values) of the HTML element that holds the timestamp underneath the “What’s Moving” table.
+```{r}
+#The html_attrs function gives the attributes of the HTML element, which is selected using the SelectorGadget app to find the appropriate css selector.
+html_attrs(html_node(webpage, css = ".wsod_disclaimer span"))
+
+```
 9. Extract the values of the blue percentage-bars from the “Trending Tickers” table (bottom right of the web page.)
 Hint: in this case, the values are stored under the “class” attribute.
+```{r}
+#This time, we want the class attribute of the values that are given after selecting for ".bars" (found using SelectorGadget). This returns a vector of strings with values "bars pctX" where X is the percentage value of the bar. Then the "bars pct" is removed to give just a vector of the values.
+values <- html_attr(html_nodes(webpage, ".bars"), "class")
+as.numeric(gsub("bars pct", "", values))
+```
 10. Get the links of all of the “svg” images on the web page.
+
+```{r}
+html_nodes(webpage, "svg")
+```
