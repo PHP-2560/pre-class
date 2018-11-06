@@ -57,7 +57,7 @@ Whats_Moving
 Hint: the base URL is “https://money.cnn.com”
 ```{r}
 #I used the selectorgadget to pick out the appropriate CSS selector - in this case it is "tr .wsod_symbol" - and the "href" attribute combined with the base URL recreates the links.
-url_suffixes <- html_attr(html_nodes(webpage, cs = "tr .wsod_symbol"), "href")
+url_suffixes <- html_attr(html_nodes(webpage, css = "tr .wsod_symbol"), "href")
 paste("https://money.cnn.com", url_suffixes, sep = "")
 ```
 7. Extract the titles under the “Latest News” section (bottom middle of the web page.)
