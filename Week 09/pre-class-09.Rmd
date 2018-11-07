@@ -82,5 +82,8 @@ as.numeric(gsub("bars pct", "", values))
 10. Get the links of all of the “svg” images on the web page.
 
 ```{r}
-html_nodes(webpage, "svg")
+#We use html_nodes to select the images, the html_attr function collects the url extensions of the images. Then the images that have a .svg file type are selected, and their urls are collected.
+images <- html_attr(html_nodes(webpage, "img"), "src")
+svg_images <- images[grep("svg", images)]
+paste("https://money.cnn.com", svg_images, sep = "")
 ```
