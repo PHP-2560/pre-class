@@ -1,14 +1,4 @@
-# pre-class
-
-
-Make sure you commit this often with meaningful messages. 
-
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
+# pre-class-06
 
 1. Read the source code for each of the following three functions, puzzle out what they do, and then brainstorm better names.
 
@@ -20,16 +10,47 @@ f2 <- function(x) {
   if (length(x) <= 1) return(NULL)
   x[-length(x)]
 }
+
 f3 <- function(x, y) {
   rep(y, length.out = length(x))
 }
 ```
+For f1 if we assign any element to character vector,it checks if the if the elements matches with prefix.
+For f2 The function drops the last element of vector.
+For f3 The function makes vector y equal to vector x in terms of elements.If y has 3 elements and x has 4,the function adds first element of y as 4th one and makes both of them equal.
 
-2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
 
 
-3. Use `lapply()` and an anonymous function to find the coefficient of variation (the standard deviation divided by the mean) for all columns in the mtcars dataset. 
+## 2. Compare and contrast rnorm() and MASS::mvrnorm(). How could you make them more consistent?
 
-4. Use vapply() to:
-    a. Compute the standard deviation of every column in a numeric data frame.
-    b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+rnorm() is used to generate random number for univariate normal distribution. While mvrnorm() is used to generate random number for bivariate or multivariate normal distribution.rnorm takes number,mean and sd.While mvrnorm takes n, mu, and Sigma.Sigma is calculated by finding determinant of variance and covariance of the variables.
+
+
+## 3. Use `lapply()` and an anonymous function to find the coefficient of variation (the standard deviation divided by the mean) for all columns in the mtcars dataset. 
+
+anonym<-function(x){
+  coeff_dev<- sd(x)/mean(x)
+  print(coeff_dev)
+}
+lapply(mtcars,anonym)
+
+
+
+## 4. Use vapply() to:
+## a. Compute the standard deviation of every column in a numeric data frame.
+    anom<-function(x){
+  if(is.numeric(x)){
+    sd(x)
+  } else {
+      print("Numeric dataset needed")
+    }
+}
+vapply(mtcars,anom,numeric(1))
+     
+  ## b. Compute the standard deviation of every numeric column in a mixed data frame. (Hint: you’ll need to use vapply() twice.)
+    
+    vapply(gapminder[vapply(gapminder, is.numeric, logical(1))], anom, numeric(1))
+    
+    
+    
+    
